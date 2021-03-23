@@ -1,0 +1,15 @@
+
+{% extends 'base.html' %}
+{% block title %} Notino fragrances watcher {% endblock %}
+{% block extra_css%} {% include 'fragrance/css.html' %}{% endblock %}
+{% block htitle %}<h1>Notino Fragrances Watcher</h1>{% endblock %}
+{% block content %}
+<div class="fragrance-app">
+    {% csrf_token %}
+    {% block app %}
+    {% endblock %}
+</div>
+{%  endblock %}
+{% block extra_js %}
+    {% include 'fragrance/js.html' %}
+{% endblock %}

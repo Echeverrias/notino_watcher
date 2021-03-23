@@ -1,0 +1,10 @@
+{% extends 'fragrance/base.html' %}
+{% block app %}
+<h2>Test 2</h2>
+<p>This is a text and this is my context xxx </p>
+{% for f in fragrance_list %}
+    <p>
+    {{ f }}
+    </p>
+{% endfor %}
+{% endblock %}

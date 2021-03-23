@@ -1,0 +1,13 @@
+{% load fragrance_extras %}
+<div class="fragrance-list view list remnant">
+    {% csrf_token %}
+    <ul class="list">
+        {% for fragrance in fragrance_list %}
+        <li>
+            <a href="{{fragrance.url}}" target="_blank">{{fragrance|stringify}}</a>
+            <button class="delete" data-url="{% url 'fragrance_delete' fragrance.pk %}" class="delete-fragrance">X</button>
+        </li>
+        {% endfor %}
+
+    </ul>
+</div>

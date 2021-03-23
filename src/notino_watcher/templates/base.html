@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="App to automatice the Notion offers search">
+    <meta name="author" content="JAEA">
+    <meta name="generator" content="Jekyll v3.8.5">
+    <title>{% block title %}Notino Offers Seeker{% endblock %}</title>
+      {% include 'css.html' %}
+      {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+
+<main role="main" class="main">
+   <div class="row">
+    {% block htitle %}<h1>Notino Offers Seeker</h1>{% endblock %}
+    </div>
+  <div class="container">
+    {% csrf_token %}
+  {% block content %} {% endblock %}
+  </div>
+</main><!-- /.container -->
+  {% include 'js.html' %}
+  {% block extra_js %}{% endblock %}
+  </body>
+</html>
+

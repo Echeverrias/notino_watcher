@@ -1,0 +1,19 @@
+.fragrance-app{
+    width:100%;
+}
+
+.list li {
+    margin: 1rem;
+}
+
+.error{
+    color:red;
+}
+
+.row{
+    justify-content:center;
+}
+
+button.delete {
+    margin-left: 1rem;
+}
