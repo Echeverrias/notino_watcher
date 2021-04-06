@@ -32,7 +32,7 @@ print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SECRET_KEY = 'ahiyxj&61mp*%@=o4zr2hf07t_ie2j0djsp()b-j%+$9(yc)zf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', default=False)
+DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', os.environ.get("ALLOWED_HOSTS", 'localhost,127.0.0.1,*')).split(',')
 
@@ -73,6 +73,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'django_filters',
     'celery',
+    'rest_framework'
 ]
 
 LOCAL_APPS = [
@@ -80,11 +81,13 @@ LOCAL_APPS = [
     'redis_',
     'demo',
     'core',
+    'api'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -92,6 +95,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'notino_watcher.urls'
@@ -142,7 +146,26 @@ DATABASES = {
         }
 }
 
-#
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get('CACHE_LOCATION', env.str("CACHE_LOCATION", "redis://localhost:6379/1")),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+         },
+       "KEY_PREFIX": os.environ.get('CACHE_KEY_PREFIX', env.str("CACHE_KEY_PREFIX", "myredis")),
+        }
+}
+
+CACHE_TTL = int(os.environ.get('CACHE_TTL', env.str("CACHE_TTL", "900")))
+CACHE_KEY_PREFIX = os.environ.get('CACHE_KEY_PREFIX', env.str("CACHE_KEY_PREFIX", "myredis"))
+
+
+
+# We need to specify a session engine in the settings. It's important to do so that Redis does not interfere with the Django Admin Panel and the current session.
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
 
 # Password validation

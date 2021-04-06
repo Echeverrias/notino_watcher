@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('fragrances/', include('fragrance.urls')),
     path('demo/', include('demo.urls')),
+    path('api/', include('api.urls')),
     path('', RedirectView.as_view(url='/fragrances', permanent=True)),
     re_path(r'^$', RedirectView.as_view(url='/home', permanent=True))
 ]

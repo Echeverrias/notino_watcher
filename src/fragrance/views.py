@@ -6,19 +6,29 @@ from django.shortcuts import render
 #from django.contrib.admin.views.decorators import staff_member_required
 # from django.utils.decorators import method_decorator
 from django.http import HttpResponse, QueryDict, JsonResponse
+from django.core import serializers
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
+
+from django.conf import settings
 import time
 from django.template.loader import render_to_string
-from django.core import serializers
 from .models import Fragrance, URL
 from .filters import FragranceFilter
 from .forms import URLForm
 from .tasks import get_notino_fragrance_data_and_update_fragrances_db_task, save_urls_watched_to_json_task
 
+CACHE_TTL = 180 #getattr(settings, 'CACHE_TTL', 900)
+CACHE_KEY_PREFIX = getattr(settings, 'CACHE_KEY_PREFIX', 'redis')
+
 #@method_decorator(login_required, name='dispatch')
+@method_decorator(cache_page(CACHE_TTL, key_prefix='notino'), name='dispatch')
 class FragranceListView(ListView):
     model = Fragrance
     context_object_name = 'fragrance_list'
     template_name = 'fragrance/query_form.html'
+    ordering = ('brand', 'name')
     #paginate_by = 20
 
     def get_queryset(self, *args, **kwargs):
@@ -30,6 +40,7 @@ class FragranceListView(ListView):
         context = super(FragranceListView, self).get_context_data(**kwargs)
         context['filter_form'] = self.fragrance_filtered_list.form
         return context
+
 
 def create_fragrance(request):
     print('create_fragrance')
@@ -62,7 +73,6 @@ def create_fragrance(request):
             return JsonResponse({'error':'URL incorrect or is already been watched'})
     else:
         return HttpResponse(None)
-
 
 
 def delete_fragrance(request, pk=None):

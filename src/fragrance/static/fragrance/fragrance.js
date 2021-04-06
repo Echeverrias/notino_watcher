@@ -130,7 +130,6 @@ $(document).ready(function(){
             },
             error: e => {
                 let msg = get_msg_error(e)
-                 alert(`error: ${msg}`)
                 display_msg('#url_form_result', msg, 'p', 'error')
             }
         })

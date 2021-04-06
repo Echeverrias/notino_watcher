@@ -1,12 +1,16 @@
 from django.db import models
 from django.core import serializers
+from django.core.cache import cache
+from django.conf import settings
 from django.utils import timezone
 from .managers import FragranceManager, URLManager
 
-d1={'name':'a', 'brand':'a', 'size':100, 'gender':'man', 'type':'eau de toilette', 'seller':'Notino','url':'www.a.com', 'price':9, 'is_in_offer': False}
+d1={"name":"a", "brand":"a", "size":100, "gender":"man", "type":"eau de toilette", "seller":"Notino","url":"https://www.notino.es/a", "price":9, "is_in_offer": "False"}
 d2={'name':'a', 'brand':'a', 'size':100, 'gender':'man', 'type':'eau de toilette', 'seller':'Notino','url':'www.a.com', 'price':7, 'is_in_offer': True}
 d3={'name':'a', 'brand':'a', 'size':100, 'gender':'man', 'type':'eau de toilette', 'seller':'Notino','url':'www.a.com', 'price':8, 'is_in_offer': False}
 d4={'name':'a', 'brand':'a', 'size':100, 'gender':'man', 'type':'eau de toilette', 'seller':'Notino','url':'www.a.com', 'price':6, 'is_in_offer': True}
+
+CACHE_NAME = getattr(settings, 'CACHE_KEY_PREFIX', 'redis')
 
 # Create your models here.
 class Fragrance(models.Model):
@@ -69,11 +73,20 @@ class Fragrance(models.Model):
         self.min_offer_price = self.price
 
     def save(self, *args, **kwargs):
+        # request, obj, form, change
+        print(kwargs) #%
+        print('Fragrance.save')
         now = timezone.localtime(timezone.now())
         if not self.created_at:
             print(f'Creating fragrance: {self.url}')
             self.created_at = now
             self._init()
+            #cache.clear()
+            caches = cache.keys(f'*{CACHE_NAME}*')
+            if caches:
+                delete_cache = cache.delete_many(caches)
+                print(cache.keys(f'*{CACHE_NAME}*')) #%
+
         else:
             print(f'Updating fragrance: {self.url}')
             self.updated_at = now if now.date() > self.created_at.date() else None
@@ -109,6 +122,7 @@ class URL (models.Model):
         return self.url
 
     def save(self, *args, **kwargs):
+        print('URL.save')
         now = timezone.localtime(timezone.now())
         if not self.created_at:
             self.created_at = now
